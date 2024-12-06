@@ -1,0 +1,26 @@
+- name: copy main.py
+  copy:
+    src: main.py
+    dest: ./main.py
+- name: copy requirements.txt
+  copy:
+    src: requirements.txt
+    dest: ./requirements.txt
+- name: copy Dockerfile
+  copy:
+    src: Dockerfile
+    dest: ./Dockerfile
+- name: Build Docker image
+  docker_image:
+    name: micro-service:latest
+    source: build
+    build:
+      path: ./
+- name: Run Docker container
+  docker_container:
+    name: micro-service
+    image: micro-service:latest
+    state: started
+    ports:
+     - "8080:8080"
+    restart_policy: always

@@ -1,0 +1,27 @@
+#cloud-config
+datasource:
+ Ec2:
+  strict_id: false
+ssh_pwauth: no
+users:
+- name: admin
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDqHuO00qdWIjwhSV/Hnte4feyB89DoQBuA7aqJOi5WrgzPTvixOhuwyQ+Z9MW26eFQHcmpoLcOF9KelUCmGkbP8pAskJcDaieo2tV372UkIa1YXRRd7oesB3bUVln0Wfr2TFOChWQlS6IP949MYtNMgrHcnRJcjQ0JfNnwXfq24M/9vfnUxABVMvvc5F1VZfbnIc9R9ntFpofj7B1oTnSAiCIGOURw5Kph4Iip9gDgW1cFAi/3N3T7p8gRhgmv3daP8GGPFL5OQHlVUw6As780F/3kSb7MDYhdXLmzXcrdGndDPGDA9erS5mZMD1wp8VLsY2l/IFl7Gu1nxCVgj8DIG9rwGH8OJ72W4Jys7NDnMDg4hUxRvkAJiRGpI/SXZPOZSdrCUchyZB/YxCxLpSaGIkh40FFqbUHJkdJ+nuYbKrKqe67XP3Oip3+3CR8EL4utfFY9cDxfSPM8ePfA0GdX+5uL5RT6N+JBVgFhGbnSpNXNmQYzXxIF01FO58bvSihG0FfeWVjtgVX7jsL6uauPM1O+vIzNFbwqVNp7xiYmHSve58KM6JEk0uy5NIhbqodV7M0nV+GHQirQ0vO1KN4+l4qH+ssgai/LfhnhFcLR8L50zq6en2Q7uNmrhECA0DiOFp0AuNZOJrsVrC3zeOBPYJtetZ+OSste5ELkJdorjQ== radiging@gmai.com
+
+write_files:
+  - path: "/usr/local/etc/docker-start.sh"
+    permissions: "755"
+    content: |
+      #!/bin/bash
+
+      # Docker
+      echo "Installing Docker"
+      sudo apt update -y && sudo apt install docker.io -y
+      echo "Grant user access to Docker"
+      sudo usermod -aG docker ${USER}
+      newgrp docker
+    defer: true
+runcmd:
+  - [su, admin, -c, "/usr/local/etc/docker-start.sh"]

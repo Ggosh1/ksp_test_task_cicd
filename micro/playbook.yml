@@ -1,0 +1,44 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install Python dependencies
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Copy application script to VM
+      copy:
+        src: ./main.py
+        dest: /opt/micro/main.py
+        mode: '0777'
+    - name: venv
+      command: python3 -m venv /opt/micro/venv
+    - name: Install Python packages in virtual environment
+      pip:
+        name:
+          - flask
+          - prometheus_client
+        virtualenv: "/opt/micro/venv"
+        state: present
+
+    - name: Create systemd service file for microservice
+      copy:
+        dest: /etc/systemd/system/micro.service
+        content: |
+          [Unit]
+          Description=A simple HTTP server for Prometheus metrics
+
+          [Service]
+          ExecStart=/opt/micro/venv/bin/python3 /opt/micro/main.py
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Start and enable microservice service
+      systemd:
+        name: micro
+        state: started
+        enabled: yes

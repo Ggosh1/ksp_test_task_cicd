@@ -1,0 +1,19 @@
+- name: Docker login
+  shell: echo y0_AgAEA7qkn1-EAATuwQAAAAEXP_5TAADqXAsUOa1E6q7gGqYcFL5a38WTOg | docker login --username oauth --password-stdin cr.yandex
+  register: variable_command_output
+
+- name: Docker pull
+  docker_image:
+    name: "cr.yandex/{{ registry_id  }}/micro:latest"
+    source: pull
+
+ 
+
+- name: Run Docker container
+  docker_container:
+    name: micro-service
+    image: "cr.yandex/{{ registry_id }}/micro:latest"
+    state: started
+    ports:
+     - "8080:8080"
+    restart_policy: always

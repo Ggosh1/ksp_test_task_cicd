@@ -1,0 +1,6 @@
+- hosts: all
+  become: yes
+  vars:
+    registry_id: "crp0fk1rqrgkmon8uh5f"
+  roles:
+    - micro-service-from-registry
